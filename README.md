@@ -27,7 +27,7 @@ To install the necessary packages, see the commands included in the script.
 
 To run the analysis:
 
-1. Place the data files in the data/raw directory.
+1. Place the data files in the data/raw/ directory.
 3. Create a results/ directory contaning two directories: figures/ and tables/. 
 4. Run the script in the scripts/ directory.  
 5. Generated results will be saved in the results/ directories.     
