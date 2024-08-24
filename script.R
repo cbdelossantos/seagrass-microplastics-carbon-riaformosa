@@ -79,11 +79,11 @@ data.cor$habitat_label <- ifelse(data.cor$species=="Zostera noltei","Intertidal 
 data.cor$habitat_label <- as.factor(data.cor$habitat_label)
 
 # save data as csv
-write_csv(data.cor,"./data/github/raw/data_cores.csv")
+write_csv(data.cor,"./data/raw/data_cores.csv")
 rm(data.cor)
 
 # for users without master excel file - use only this command
-data.cor <- read_csv("./data/github/raw/data_cores.csv")
+data.cor <- read_csv("./data/raw/data_cores.csv")
 
 #### PREPARE DATA CARBON ####
 
@@ -125,11 +125,11 @@ data.dep$habitat_label <- as.factor(data.dep$habitat_label)
 table(data.dep$core_id,data.dep$species)
 
 # save data as csv
-write_csv(data.dep,"./data/github/raw/data_samples.csv")
+write_csv(data.dep,"./data/raw/data_samples.csv")
 rm(data.dep)
 
 # for users without master excel file - use only this command
-data.dep <- read_csv("./data/github/raw/data_samples.csv")
+data.dep <- read_csv("./data/raw/data_samples.csv")
 
 #### ------------------------------------- PREPARATION DATA VISUAL ---------------------------####
 #### PREPARE DATA VISUAL - ITEMS ####
@@ -179,11 +179,11 @@ rm(info,sam.dep,sam.vis)
 data.vis$visual_id <- paste0("visual_",1:nrow(data.vis))
 
 # save data as csv
-write_csv(data.vis,"./data/github/raw/data_particles_visual.csv")
+write_csv(data.vis,"./data/raw/data_particles_visual.csv")
 rm(data.vis)
 
 # for users without master excel file - use only this command
-data.vis <- read_csv("./data/github/raw/data_particles_visual.csv")
+data.vis <- read_csv("./data/raw/data_particles_visual.csv")
 
 #### PREPARE DATA VISUAL - PER SAMPLE - SHAPE ####
 
@@ -395,7 +395,7 @@ data.vis.sam$habitat_label <- ifelse(data.vis.sam$species=="Zostera noltei","Int
 data.vis.sam$habitat_label <- as.factor(data.vis.sam$habitat_label)
 
 # save data
-write_csv(data.vis.sam,"./data/github/processed/data_particles_visual_persample.csv")
+write_csv(data.vis.sam,"./data/processed/data_particles_visual_persample.csv")
 
 # clean
 rm(data.vis.col,data.vis.sha)
@@ -585,7 +585,7 @@ data.fti[is.na(data.fti$filter_area)==T,]
 data.fti[is.na(data.fti$filter_area)==T,]$filter_area <-  0.25
 
 # save
-write.csv(data.fti,"./data/github/raw/data_particles_ftir.csv")
+write.csv(data.fti,"./data/raw/data_particles_ftir.csv")
 
 # difference of number of particles in data.fti and data.vis (only sediment samples)
 nrow(data.fti[data.fti$type=="sediment",])-nrow(data.vis[data.vis$type=="sediment",])
@@ -594,7 +594,7 @@ nrow(data.fti[data.fti$type=="sediment",])-nrow(data.vis[data.vis$type=="sedimen
 rm(detection,i,n.items,data,DATA,filters,fil.fti,fil.vis)
 
 # for users without master excel file - use only this command
-data.fti <- read_csv("./data/github/raw/data_particles_ftir.csv")
+data.fti <- read_csv("./data/raw/data_particles_ftir.csv")
 
 #### PREPARE DATA FTIR - PER SAMPLE ####
 
@@ -691,7 +691,7 @@ data.fti.sam$habitat_label <- as.factor(data.fti.sam$habitat_label)
 rm(weights)
 
 # save data
-write_csv(data.fti.sam,"./data/github/processed/data_particles_ftir_persample.csv")
+write_csv(data.fti.sam,"./data/processed/data_particles_ftir_persample.csv")
 
 #### ------------------------------------- CALCULATIONS STOCKS ---------------------------####
 #### CALCULATION STOCK CARBON ####
