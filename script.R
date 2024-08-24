@@ -1,17 +1,6 @@
 #### METADATA ####     
-## Authors:            Carmen B. de los Santos (cbsantos@ualg.pt)
-## Version track:      Faro, 14/04/2022
-## Version track:      Faro, 11/05/2022
-## Version track:      Faro, 16/05/2022 
-## version track:      Faro, 02/06/2022
-## version track:      Faro, 05/06/2022
-## version track:      Faro, 13/06/2022
-## version track:      Faro, 20/06/2022 - Carmen's modifications
-## version track:      Faro, 20/06/2022 - Carmen and Charlotte's modifications
-## version track:      Faro, 10/05/2023 - Carmen's modifications
-## version track:      Faro, 01/03/2024 - Carmen's inputs
-## version track:      Faro, 02/07/2024 - Calculation stocks only FTIR-identified MPs, review all script
-## version track:      Faro, 22/07/2024 - Minor aesthetics changes in plots
+## Authors:                Carmen B. de los Santos (cbsantos@ualg.pt)
+## Last modification:      Faro, 24/08/2024 - preparation for GitHub
 
 #### SETTINGS ####
 
@@ -44,7 +33,7 @@ rm(list=ls())
 setwd("~/OneDrive - Universidade do Algarve/Trabajo-OneDrive/publications/wip/supervisions/charlotte-plastics/wordir/")
 
 # theme
-theme_thesis <- theme(plot.background=element_blank()) +
+theme_custom <- theme(plot.background=element_blank()) +
   theme(panel.background=element_rect(fill="white",colour="black")) +
   theme(strip.background=element_blank()) +
   theme(strip.text=element_text(size=9,colour="black",angle=0)) +
@@ -76,6 +65,8 @@ RStudio.Version()
 #### ------------------------------------- PREPARATION DATA ---------------------------####
 #### PREPARE DATA CORES ####
 
+# note: for GitHub users without master excel file - run only the last command in this section
+
 # load data
 data.cor <- read_excel("./data/data_charlotte_20240703.xlsx",sheet="cores",na="NA",skip=3)
 
@@ -87,7 +78,16 @@ data.cor <- data.cor[,c("core_id","core_id_new","species","replicate","actual_le
 data.cor$habitat_label <- ifelse(data.cor$species=="Zostera noltei","Intertidal (Zn)","Subtidal (Cn)")
 data.cor$habitat_label <- as.factor(data.cor$habitat_label)
 
+# save data as csv
+write_csv(data.cor,"./data/github/raw/data_cores.csv")
+rm(data.cor)
+
+# for users without master excel file - use only this command
+data.cor <- read_csv("./data/github/raw/data_cores.csv")
+
 #### PREPARE DATA CARBON ####
+
+# note: for GitHub users without master excel file - run only the last command in this section
 
 # load data
 data.dep <- read_excel("./data/data_charlotte_20240703.xlsx",sheet="depthseries",na="NA",skip=3)
@@ -124,8 +124,17 @@ data.dep$habitat_label <- as.factor(data.dep$habitat_label)
 # check samples-cores-species
 table(data.dep$core_id,data.dep$species)
 
+# save data as csv
+write_csv(data.dep,"./data/github/raw/data_samples.csv")
+rm(data.dep)
+
+# for users without master excel file - use only this command
+data.dep <- read_csv("./data/github/raw/data_samples.csv")
+
 #### ------------------------------------- PREPARATION DATA VISUAL ---------------------------####
 #### PREPARE DATA VISUAL - ITEMS ####
+
+# note: for GitHub users without master excel file - run only the last command in this section
 
 # load data
 data.vis <- read_excel("./data/data_charlotte_20240703.xlsx",sheet="visual",na="NA",skip=3)
@@ -165,6 +174,16 @@ sam.dep[!sam.dep %in% sam.vis]
 
 # clean
 rm(info,sam.dep,sam.vis)
+
+# create unique id for each item
+data.vis$visual_id <- paste0("visual_",1:nrow(data.vis))
+
+# save data as csv
+write_csv(data.vis,"./data/github/raw/data_particles_visual.csv")
+rm(data.vis)
+
+# for users without master excel file - use only this command
+data.vis <- read_csv("./data/github/raw/data_particles_visual.csv")
 
 #### PREPARE DATA VISUAL - PER SAMPLE - SHAPE ####
 
@@ -376,28 +395,15 @@ data.vis.sam$habitat_label <- ifelse(data.vis.sam$species=="Zostera noltei","Int
 data.vis.sam$habitat_label <- as.factor(data.vis.sam$habitat_label)
 
 # save data
-write_csv(data.vis.sam,"./data/rdata/data_visual_sample.csv")
+write_csv(data.vis.sam,"./data/github/processed/data_particles_visual_persample.csv")
 
 # clean
 rm(data.vis.col,data.vis.sha)
 
-#### NUMBER OF FILTERS VISUAL ####
-
-# calculate
-table.fil <- ddply(data.vis,.(core_id,sample_id),summarise,
-                   n=length(filter_id))
-
-# average number of filters per sample
-mean(table.fil$n)
-
-# save data
-write_csv(table.fil,"./data/rdata/table_number_filters.csv")
-
-# clean
-rm(table.fil)
-
 #### ------------------------------------- PREPARATION DATA FTIR ---------------------------####
 #### PREPARE FTIR LIBRARY ####
+
+# note: for GitHub users without master excel file - skip this section
 
 # objective: check that all the polymers found in our samples are in the library, if not, add them.
 
@@ -446,13 +452,12 @@ nrow(list_polymers[list_polymers$not_in_library==1,])
 list_polymers_not_in_library <- list_polymers[list_polymers$not_in_library==1,]
 list_polymers_not_in_library
 
-# save lists
-write.xlsx(list_polymers_not_in_library,"./data/rdata/list_not_in_library.xlsx")
-
 # clean
 rm(list_library,list_polymers,list_samples,list_polymers_not_in_library,data.fti)
 
 #### PREPARE DATA FTIR - ITEMS ####
+
+# note: for GitHub users without master excel file - run only the last command in this section
 
 # load data
 data.fti <- read_excel("./data/data_charlotte_20240703.xlsx",sheet="ftir",na="NA",skip=3)
@@ -579,14 +584,17 @@ data.fti <- merge(data.fti,filters,all.x=T)
 data.fti[is.na(data.fti$filter_area)==T,]
 data.fti[is.na(data.fti$filter_area)==T,]$filter_area <-  0.25
 
-# save working file
-write.xlsx(data.fti,"./data/rdata/data_ftir_processed.xlsx")
+# save
+write.csv(data.fti,"./data/github/raw/data_particles_ftir.csv")
 
 # difference of number of particles in data.fti and data.vis (only sediment samples)
 nrow(data.fti[data.fti$type=="sediment",])-nrow(data.vis[data.vis$type=="sediment",])
 
 # clean
 rm(detection,i,n.items,data,DATA,filters,fil.fti,fil.vis)
+
+# for users without master excel file - use only this command
+data.fti <- read_csv("./data/github/raw/data_particles_ftir.csv")
 
 #### PREPARE DATA FTIR - PER SAMPLE ####
 
@@ -681,6 +689,9 @@ data.fti.sam$habitat_label <- as.factor(data.fti.sam$habitat_label)
 
 # clean
 rm(weights)
+
+# save data
+write_csv(data.fti.sam,"./data/github/processed/data_particles_ftir_persample.csv")
 
 #### ------------------------------------- CALCULATIONS STOCKS ---------------------------####
 #### CALCULATION STOCK CARBON ####
@@ -874,7 +885,7 @@ table.sto <- rbind(table.sto,stocks_ap_50,stocks_ap_100)
 table.sto <- arrange(table.sto,type,depth,core_id_new)
 
 # save data
-write_csv(table.sto,"./data/rdata/table_stocks.csv")
+write_csv(table.sto,"./results/tables/table_stocks.csv")
 
 # clean
 rm(stocks_ap_50,stocks_ap_100,min_depth,max_depth,extrapolation_rule,sed_samples)
@@ -974,8 +985,8 @@ stocks_mp_100
 table.sto <- rbind(table.sto,stocks_mp_50,stocks_mp_100)
 table.sto <- arrange(table.sto,type,depth,core_id_new)
 
-# save data
-write_csv(table.sto,"./data/rdata/table_stocks.csv")
+# save
+write_csv(table.sto,"./results/tables/table_stocks.csv")
 
 # clean
 rm(stocks_mp_50,stocks_mp_100,min_depth,max_depth,extrapolation_rule,sed_samples)
@@ -984,31 +995,31 @@ rm(stocks_mp_50,stocks_mp_100,min_depth,max_depth,extrapolation_rule,sed_samples
 #### EXPLORATORY ANALYSIS CARBON ####
 
 # profile dry bulk density
-ggplot(data.dep,aes(y=dry_bulk_density,x=depth_middle,colour=habitat_label,linetype=replicate)) +
+ggplot(data.dep,aes(y=dry_bulk_density,x=depth_middle,colour=habitat_label,linetype=as.factor(replicate))) +
   geom_point() + geom_line() +
   scale_y_continuous("Dry bulk dentisy (g cm-3)") +
   scale_x_reverse("Depth (cm)") +
   facet_grid(.~habitat_label) +
   coord_flip() +
-  theme_thesis
+  theme_custom
 
 # profile organic matter
-ggplot(data.dep,aes(y=percentage_organic_matter,x=depth_middle,colour=habitat_label,linetype=replicate)) +
+ggplot(data.dep,aes(y=percentage_organic_matter,x=depth_middle,colour=habitat_label,linetype=as.factor(replicate))) +
   geom_point() + geom_line() +
   scale_y_continuous("Organic matter (% dw)",limits=c(0,15)) +
   scale_x_reverse("Depth (cm)") +
   facet_grid(.~habitat_label) +
   coord_flip() +
-  theme_thesis
+  theme_custom
 
 # profile organic carbon
-ggplot(data.dep,aes(y=percentage_organic_carbon,x=depth_middle,colour=habitat_label,linetype=replicate)) +
+ggplot(data.dep,aes(y=percentage_organic_carbon,x=depth_middle,colour=habitat_label,linetype=as.factor(replicate))) +
   geom_point() + geom_line() +
   scale_y_continuous("Organic carbon (% dw)",limits=c(0,5)) +
   scale_x_reverse("Depth (cm)") +
   facet_grid(.~habitat_label) +
   coord_flip() +
-  theme_thesis
+  theme_custom
 
 # correlation dry bulk density and organic matter
 ggplot(data.dep,aes(x=dry_bulk_density,y=percentage_organic_matter)) +
@@ -1016,20 +1027,20 @@ ggplot(data.dep,aes(x=dry_bulk_density,y=percentage_organic_matter)) +
   geom_smooth(method="loess",formula="y~x") +
   scale_x_continuous("Dry bulk density (g dw cm-3)") +
   scale_y_continuous("Organic matter (% dw)") +
-  theme_thesis
+  theme_custom
 
 ggplot(data.dep,aes(x=dry_bulk_density,y=percentage_organic_matter,colour=habitat_label)) +
   geom_point() +
   geom_smooth(method="loess",formula="y~x") +
   scale_x_continuous("Dry bulk density (g dw cm-3)") +
   scale_y_continuous("Organic matter (% dw)") +
-  theme_thesis
+  theme_custom
 
 # stocks organic carbon per species, replicate and depth
 ggplot(table.sto[table.sto$type=="oc",],aes(x=habitat_label,y=stock,fill=core_id)) +
   geom_bar(stat="identity",position="dodge") +
   facet_grid(.~depth) +
-  theme_thesis
+  theme_custom
 
 # clean
 dev.off()
@@ -1106,7 +1117,7 @@ ggplot(data.vis.sed,aes(x=major,y=minor,colour=shape)) +
   scale_x_log10("Length major dimension (um)") +
   scale_y_log10("Length minor dimension (um)") +
   # facet_wrap(~shape) +
-  theme_thesis
+  theme_custom
 
 # explore correlation shape and colour
 table <- data.frame(table(data.vis.sed$colour,data.vis.sed$shape))
@@ -1117,7 +1128,7 @@ ggplot(table,aes(x=colour,y=shape,fill=n)) +
   scale_fill_gradient(low="white", high="blue") +
   scale_y_discrete("AP shape") +
   scale_x_discrete("AP colour") +
-  theme_thesis +
+  theme_custom +
   theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5))
 
 # clean
@@ -1192,7 +1203,7 @@ TABLE <- arrange(TABLE,core_id_new)
 TABLE
 data.dep <- DATA.CORE
 
-write_csv(TABLE,"./data/rdata/table_oc_content.csv")
+write_csv(TABLE,"./results/tables/table_oc_content.csv")
 
 # ap abundance per core
 n.core     <- unique(data.vis.sam$core_id_new)
@@ -1227,7 +1238,7 @@ for(i in 1:length(n.core)){
 TABLE <- arrange(TABLE,core_id_new)
 TABLE
 data.vis.sam <- DATA.CORE
-write_csv(TABLE,"./data/rdata/table_ap_abundance.csv")
+write_csv(TABLE,"./results/tables/table_smp_abundance.csv")
 
 # mp abundance per core
 n.core     <- unique(data.dep$core_id_new)
@@ -1262,7 +1273,7 @@ for(i in 1:length(n.core)){
 TABLE <- arrange(TABLE,core_id_new)
 TABLE
 data.dep <- DATA.CORE
-write_csv(TABLE,"./data/rdata/table_mp_abundance.csv")
+write_csv(TABLE,"./results/tables/table_mp_abundance.csv")
 
 # clean
 rm(data.core,i,j,n.core,table,TABLE,DATA.CORE)
@@ -1304,7 +1315,7 @@ model <- lmer(abundance_mp~depth_middle+(1|core_id_new),data=data.dep)
 summary(model) # yes
 
 # oc content profile along depth per core
-fig2a <- ggplot(data.dep,aes(y=percentage_organic_carbon,x=depth_middle,colour=habitat_label,linetype=replicate)) +
+fig2a <- ggplot(data.dep,aes(y=percentage_organic_carbon,x=depth_middle,colour=habitat_label,linetype=as.factor(replicate))) +
   geom_line() +
   geom_point(shape=21,fill="white",size=3) +
   scale_y_continuous("OC content (% dw)",limits=c(0,5)) +
@@ -1313,14 +1324,14 @@ fig2a <- ggplot(data.dep,aes(y=percentage_organic_carbon,x=depth_middle,colour=h
   coord_flip() +
   scale_color_manual("Habitat",values=c("darkorange","purple")) +
   scale_linetype_manual("Habitat",values=c(1,2,3)) +
-  theme_thesis +
+  theme_custom +
   theme(strip.text.x=element_text(size=16)) +
   guides(linetype="none",colour="none") +
   labs(tag="A")
 fig2a
 
 # ap abundance profile along depth per core
-fig2b <- ggplot(data.dep,aes(y=abundance_ap,x=depth_middle,colour=habitat_label,linetype=replicate)) +
+fig2b <- ggplot(data.dep,aes(y=abundance_ap,x=depth_middle,colour=habitat_label,linetype=as.factor(replicate))) +
   geom_line() +
   geom_point(shape=21,fill="white",size=3) +
   scale_y_continuous(bquote(SMP~abundance~(items~kg^-1~dw))) +
@@ -1329,14 +1340,14 @@ fig2b <- ggplot(data.dep,aes(y=abundance_ap,x=depth_middle,colour=habitat_label,
   coord_flip() +
   scale_color_manual("Habitat",values=c("darkorange","purple")) +
   scale_linetype_manual("Habitat",values=c(1,2,3)) +
-  theme_thesis +
+  theme_custom +
   theme(strip.text.x=element_text(size=16)) +
   guides(linetype="none",colour="none") +
   labs(tag="B")
 fig2b
 
 # mp abundance profile along depth per core
-fig2c <- ggplot(data.dep,aes(y=abundance_mp,x=depth_middle,colour=habitat_label,linetype=replicate)) +
+fig2c <- ggplot(data.dep,aes(y=abundance_mp,x=depth_middle,colour=habitat_label,linetype=as.factor(replicate))) +
   geom_line() +
   geom_point(shape=21,fill="white",size=3) +
   scale_y_continuous(bquote(MP~abundance~(items~kg^-1~dw))) +
@@ -1345,14 +1356,14 @@ fig2c <- ggplot(data.dep,aes(y=abundance_mp,x=depth_middle,colour=habitat_label,
   coord_flip() +
   scale_color_manual("Habitat",values=c("darkorange","purple")) +
   scale_linetype_manual("Habitat",values=c(1,2,3)) +
-  theme_thesis +
+  theme_custom +
   theme(strip.text.x=element_text(size=16)) +
   guides(linetype="none",colour="none") +
   labs(tag="C")
 fig2c
 
 # save figure
-pdf(file="./figures/figure_2.pdf",width=5,height=12)
+pdf(file="./results/figures/figure_2.pdf",width=5,height=12)
 grid.arrange(fig2a,fig2b,fig2c,top="",nrow=3)
 dev.off()
 
@@ -1385,6 +1396,9 @@ table$se          <- table$sd/sqrt(table$n)
 table$weighted.se <- table$weighted.sd/sqrt(table$n)
 table
 
+# save
+write_csv(table,"./results/tables/table_oc_content_perhabitat.csv")
+
 # clean
 rm(sdata,table,test.oc)
 
@@ -1413,6 +1427,9 @@ table$se          <- table$sd/sqrt(table$n)
 table$weighted.se <- table$weighted.sd/sqrt(table$n)
 table
 
+# save
+write_csv(table,"./results/tables/table_smp_abundance_perhabitat.csv")
+
 # is there any significant difference between intertidal and subtidal particle abundance? (only top 3 cm)
 sdata <- data.dep[data.dep$depth_middle<=3,]
 hist(sdata$abundance_ap)
@@ -1435,6 +1452,8 @@ table <- ddply(data.vis.sam[data.vis.sam$depth_middle<=3,],.(habitat_label),summ
 table$se          <- table$sd/sqrt(table$n)
 table$weighted.se <- table$weighted.sd/sqrt(table$n)
 table
+
+write_csv(table,"./results/tables/table_smp_abundance_perhabitat_top3cm.csv")
 
 # clean
 rm(sdata,table,test.mp)
@@ -1464,6 +1483,9 @@ table$se          <- table$sd/sqrt(table$n)
 table$weighted.se <- table$weighted.sd/sqrt(table$n)
 table
 
+# save
+write_csv(table,"./results/tables/table_mp_abundance_perhabitat.csv")
+
 # clean
 rm(sdata,table,test.mp)
 
@@ -1482,6 +1504,9 @@ table.sto.hab <- ddply(table.sto,.(depth,habitat_label,type),summarise,
 # show values for table 1
 table.sto.hab[table.sto.hab$type=="mp" & table.sto.hab$depth==100,]
 table.sto.hab[table.sto.hab$type=="oc" & table.sto.hab$depth==100,]
+
+# save
+write_csv(table.sto.hab,"./results/tables/table_stocks_perhabitat.csv")
 
 # is there any significant difference between intertidal and subtidal OC stocks?
 sdata <- table.sto[table.sto$depth==100 & table.sto$type=="oc",]
@@ -1516,7 +1541,7 @@ fig3a <- ggplot(pdata,aes(x=habitat_label,y=stock,fill=habitat_label)) +
   scale_y_continuous(bquote(OC~stock~100~cm~(g~cm^-2))) +
   scale_fill_manual("Habitat",values=c("darkorange","purple")) +
   annotate("text",x=2,y=1.1,label=paste0("p-value = ",round(test.st.oc$p.value,3)),size=5) +
-  theme_thesis +
+  theme_custom +
   guides(fill="none") +
   labs(tag="A")
 fig3a
@@ -1530,7 +1555,7 @@ fig3b <- ggplot(pdata,aes(x=habitat_label,y=stock,fill=habitat_label)) +
   scale_y_continuous(bquote(SMP~stock~100~cm~(items~cm^-2))) +
   scale_fill_manual("Habitat",values=c("darkorange","purple")) +
   annotate("text",x=2,y=22,label=paste0("p-value = ",round(test.st.ap$p.value,3)),size=5) +
-  theme_thesis +
+  theme_custom +
   guides(fill="none") +
   labs(tag="B")
 fig3b
@@ -1544,13 +1569,13 @@ fig3c <- ggplot(pdata,aes(x=habitat_label,y=stock,fill=habitat_label)) +
   scale_y_continuous(bquote(MP~stock~100~cm~(items~cm^-2))) +
   scale_fill_manual("Habitat",values=c("darkorange","purple")) +
   annotate("text",x=1,y=3,label=paste0("p-value = ",round(test.st.mp$p.value,3)),size=5) +
-  theme_thesis +
+  theme_custom +
   guides(fill="none") +
   labs(tag="C")
 fig3c
 
 # save figure
-pdf(file="./figures/figure_3.pdf",width=5,height=12)
+pdf(file="./results/figures/figure_3.pdf",width=5,height=12)
 grid.arrange(fig3a,fig3b,fig3c,top="",nrow=3)
 dev.off()
 
@@ -1565,14 +1590,14 @@ table <- data.frame(table(data.vis.sed$colour))
 names(table) <- c("category","n")
 table$percentage <- round(100*table$n/sum(table$n),1)
 table
-write_csv(table,"./tables/table_general_ap_colour.csv")
+write_csv(table,"./results/tables/table_general_smp_colour.csv")
 
 # percentages shape SMP
 table <- data.frame(table(data.vis.sed$shape))
 names(table) <- c("category","n")
 table$percentage <- round(100*table$n/sum(table$n),1)
 table
-write_csv(table,"./tables/table_general_ap_shape.csv")
+write_csv(table,"./results/tables/table_general_smp_shape.csv")
 
 # percentages composition SMP
 table <- data.frame(table(data.fti.sed$polymer_group_final))
@@ -1580,7 +1605,7 @@ names(table) <- c("category","n")
 table$percentage <- round(100*table$n/sum(table$n),1)
 table <- arrange(table,-percentage)
 table
-write_csv(table,"./tables/table_general_ap_composition.csv")
+write_csv(table,"./results/tables/table_general_smp_composition.csv")
 
 # percentage composition MP
 data <- data.fti.sed[data.fti.sed$polymer_group_final!="Non-plastic" & data.fti.sed$polymer_group_final!="unclear",]
@@ -1589,7 +1614,7 @@ names(table) <- c("category","n")
 table$percentage <- round(100*table$n/sum(table$n),1)
 table <- arrange(table,-percentage)
 table
-write_csv(table,"./tables/table_general_mp_composition.csv")
+write_csv(table,"./results/tables/table_general_mp_composition.csv")
 
 # percentage of particles under 1 mm
 100*nrow(data.vis[data.vis$major<1000,])/nrow(data.vis)
@@ -1615,7 +1640,7 @@ table$perc_Cn <- round(100*table$Cn/sum(table$Cn),1)
 table$perc_Zn <- round(100*table$Zn/sum(table$Zn),1)
 table
 chisq.test(table$Cn,table$Zn) # no
-write_csv(table,"./tables/table_habitat_ap_colour.csv")
+write_csv(table,"./results/tables/table_habitat_smp_colour.csv")
 
 table <- data.frame(table(data.vis.sed$shape,data.vis.sed$species))
 names(table) <- c("category","species","n")
@@ -1625,7 +1650,7 @@ table$perc_Cn <- round(100*table$Cn/sum(table$Cn),1)
 table$perc_Zn <- round(100*table$Zn/sum(table$Zn),1)
 table
 chisq.test(table$Cn,table$Zn) # no
-write_csv(table,"./tables/table_habitat_ap_shape.csv")
+write_csv(table,"./results/tables/table_habitat_smp_shape.csv")
 
 table <- data.frame(table(data.fti.sed$polymer_group_final,data.fti.sed$species))
 names(table) <- c("category","species","n")
@@ -1637,7 +1662,7 @@ table
 arrange(table,-perc_Cn)
 arrange(table,-perc_Zn)
 chisq.test(table$Cn,table$Zn) # yes
-write_csv(table,"./tables/table_habitat_ap_composition.csv")
+write_csv(table,"./results/tables/table_habitat_smp_composition.csv")
 
 table <- data.frame(table(data.fti.sed$polymer_group_final,data.fti.sed$species))
 names(table) <- c("category","species","n")
@@ -1650,7 +1675,7 @@ table
 arrange(table,-perc_Cn)
 arrange(table,-perc_Zn)
 chisq.test(table$Cn,table$Zn) # yes
-write_csv(table,"./tables/table_habitat_mp_composition.csv")
+write_csv(table,"./results/tables/table_habitat_mp_composition.csv")
 
 # plot shape per meadow
 pdata <- data.frame(table(data.vis.sed$shape,data.vis.sed$habitat_label))
@@ -1661,7 +1686,7 @@ fig4a <- ggplot(pdata,aes(x=species,y=n,fill=category)) +
   scale_y_continuous("Proportion") +
   scale_fill_brewer("",palette="Set1",labels=c("Film","Foam","Fragment",
                                                "Line","Pellet")) +
-  theme_thesis +
+  theme_custom +
   theme(legend.position="top") + guides(fill=guide_legend(nrow=2,byrow=TRUE)) +
   theme(legend.text=element_text(size=8.3)) +
   labs(tag="A") 
@@ -1678,7 +1703,7 @@ fig4b <- ggplot(pdata,aes(x=species,y=n,fill=category)) +
                                 "firebrick1","aliceblue","lemonchiffon1","gold1"),
                     labels=c("Black-Grey","Blue-Green","Brown-Tan","Opaque",
                              "Orange-Pink-Red","Transparent","While-Cream","Yellow")) +
-  theme_thesis +
+  theme_custom +
   theme(legend.position="top") + guides(fill=guide_legend(nrow=4,byrow=TRUE)) +
   theme(legend.text=element_text(size=8.3)) +
   labs(tag="B") 
@@ -1696,14 +1721,14 @@ fig4c <- ggplot(pdata,aes(x=species,y=n,fill=category)) +
   scale_x_discrete("") +
   scale_y_continuous("Proportion") +
   scale_fill_manual("",values=c(mypalette)) +
-  theme_thesis +
+  theme_custom +
   theme(legend.position="top") + guides(fill=guide_legend(nrow=6,byrow=TRUE)) +
   theme(legend.text=element_text(size=8.3)) +
   labs(tag="C")
 fig4c
 
 # save
-pdf(file="./figures/figure_4.pdf",width=5,height=12)
+pdf(file="./results/figures/figure_4.pdf",width=5,height=12)
 grid.arrange(fig4a,fig4b,fig4c,top="")
 dev.off()
 
@@ -1724,7 +1749,7 @@ fig5a <- ggplot(table,aes(x=colour,y=shape,fill=n)) +
   scale_y_discrete("",labels=c("Film","Foam","Fragment","Line","Pellet")) +
   scale_x_discrete("",labels=c("Black-Grey","Blue-Green","Brown-Tan",
                                "Opaque","Orange-Pink-Red","Transparent","White-Cream","Yellow")) +
-  theme_thesis +
+  theme_custom +
   theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5)) +
   labs(tag="A")
 fig5a
@@ -1740,13 +1765,13 @@ fig5b <- ggplot(table,aes(y=shape,x=polymer,fill=n)) +
   scale_fill_gradient("Number of \n particles",low="white", high="orange") +
   scale_y_discrete("",labels=c("Film","Foam","Fragment","Line","Pellet")) +
   scale_x_discrete("") +
-  theme_thesis +
+  theme_custom +
   theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5)) +
   labs(tag="B")
 fig5b
 
 # save
-pdf(file="./figures/figure_5.pdf",width=8,height=12)
+pdf(file="./results/figures/figure_5.pdf",width=8,height=12)
 grid.arrange(fig5a,fig5b,top="",nrow=2)
 dev.off()
 
@@ -1770,11 +1795,11 @@ fig6 <- ggplot(data.vis.sed,aes(x=major,colour=habitat_label,fill=habitat_label)
   scale_fill_manual("",values=alpha(c("darkorange","purple"),0.25)) +
   annotate("text",x=4000,y=0.001,label="p-value = 0.873",size=5) +
   theme(legend.position="top") +
-  theme_thesis
+  theme_custom
 fig6
 
 # save
-pdf(file="./figures/figure_6.pdf",width=6,height=5)
+pdf(file="./results/figures/figure_6.pdf",width=6,height=5)
 grid.arrange(fig6,top="")
 dev.off()
 
@@ -1878,7 +1903,7 @@ fig7a <- ggplot(data.dep,aes(x=percentage_organic_carbon,y=abundance_ap,colour=h
   annotate("text",x=4,y=850,label="p-value = 0.063",size=5) +
   theme(legend.position="top") +
   theme(legend.text=element_text(size=15)) +
-  theme_thesis 
+  theme_custom 
 fig7a
 
 # plot oc-mp
@@ -1890,11 +1915,11 @@ fig7b <- ggplot(data.dep,aes(x=percentage_organic_carbon,y=abundance_mp,colour=h
   annotate("text",x=4,y=400,label="p-value = 0.059",size=5) +
   theme(legend.position="top") +
   theme(legend.text=element_text(size=15)) +
-  theme_thesis 
+  theme_custom 
 fig7b
 
 # save figure
-pdf(file="./figures/figure_7.pdf",width=5,height=10)
+pdf(file="./results/figures/figure_7.pdf",width=5,height=10)
 grid.arrange(fig7a,fig7b,top="")
 dev.off()
 
