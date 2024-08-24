@@ -1,0 +1,7 @@
+core_id,core_id_new,species,replicate,actual_length,compaction_perc,habitat_label
+CH1,Zn1,Zostera noltei,1,92,11.9565217391304,Intertidal (Zn)
+CH4,Zn2,Zostera noltei,2,81,24.6913580246914,Intertidal (Zn)
+CH7,Zn3,Zostera noltei,3,90,20,Intertidal (Zn)
+CH6,Cn1,Cymodocea nodosa,1,75,12,Subtidal (Cn)
+CH8,Cn2,Cymodocea nodosa,2,85,24.7058823529412,Subtidal (Cn)
+CH9,Cn3,Cymodocea nodosa,3,86.5,19.0751445086705,Subtidal (Cn)
