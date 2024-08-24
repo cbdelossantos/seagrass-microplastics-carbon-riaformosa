@@ -1,17 +1,5 @@
 #### METADATA ####     
 ## Authors:            Carmen B. de los Santos (cbsantos@ualg.pt)
-## Version track:      Faro, 14/04/2022
-## Version track:      Faro, 11/05/2022
-## Version track:      Faro, 16/05/2022 
-## version track:      Faro, 02/06/2022
-## version track:      Faro, 05/06/2022
-## version track:      Faro, 13/06/2022
-## version track:      Faro, 20/06/2022 - Carmen's modifications
-## version track:      Faro, 20/06/2022 - Carmen and Charlotte's modifications
-## version track:      Faro, 10/05/2023 - Carmen's modifications
-## version track:      Faro, 01/03/2024 - Carmen's inputs
-## version track:      Faro, 02/07/2024 - Calculation stocks only FTIR-identified MPs, review all script
-## version track:      Faro, 22/07/2024 - Minor aesthetics changes in plots
 ## version track:      Faro, 24/08/2024 - Version for GitHub
 
 #### SETTINGS ####
