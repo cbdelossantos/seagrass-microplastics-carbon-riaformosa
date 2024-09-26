@@ -30,7 +30,7 @@ for (i in seq_along(packages)) {
 rm(list=ls())
 
 # working directory Carmen
-setwd("~/OneDrive - Universidade do Algarve/Trabajo-OneDrive/publications/wip/supervisions/charlotte-plastics/wordir/")
+setwd("~/OneDrive - Universidade do Algarve/Trabajo-OneDrive/publications/submitted/2024_van-den-auwelant/wordir/")
 
 # theme
 theme_custom <- theme(plot.background=element_blank()) +
@@ -72,20 +72,23 @@ data.cor <- read_excel("./data/data_charlotte_20240703.xlsx",sheet="cores",na="N
 
 # select columns
 names(data.cor)
-data.cor <- data.cor[,c("core_id","core_id_new","species","replicate","actual_length","compaction_perc")]
+data.cor <- data.cor[,c("core_id","core_id_new","species","replicate","core_depth","sample_length","compaction_factor","compaction_perc")]
+
+# recalculate compaction factor
+data.cor$compaction_factor <- data.cor$sample_length/data.cor$core_depth
+data.cor$compaction_perc <- 100*(1-data.cor$compaction_factor)
+
+# save data as csv
+write_csv(data.cor,"./data/raw/data_cores.csv")
+
+# for users without master excel file - use only this command
+data.cor <- read_csv("./data/raw/data_cores.csv",show_col_types=FALSE)
 
 # add label for figures
 data.cor$habitat_label <- ifelse(data.cor$species=="Zostera noltei","Intertidal (Zn)","Subtidal (Cn)")
 data.cor$habitat_label <- as.factor(data.cor$habitat_label)
 
-# save data as csv
-write_csv(data.cor,"./data/raw/data_cores.csv")
-rm(data.cor)
-
-# for users without master excel file - use only this command
-data.cor <- read_csv("./data/raw/data_cores.csv")
-
-#### PREPARE DATA CARBON ####
+#### PREPARE DATA SAMPLES CARBON ####
 
 # note: for GitHub users without master excel file - run only the last command in this section
 
@@ -109,27 +112,26 @@ data.dep$dry_bulk_density <- data.dep$sample_dw/data.dep$sample_volume
 # check data structure
 str(data.dep)
 
+# save data as csv
+write_csv(data.dep,"./data/raw/data_samples.csv")
+
+# for users without master excel file - use only this command
+data.dep <- read_csv("./data/raw/data_samples.csv")
+
 # add info to data.dep
-data.dep <- merge(data.cor,data.dep,by="core_id")
+data.dep <- merge(data.cor,data.dep,by="core_id",show_col_types=FALSE)
+
+# add label for figures
+data.dep$habitat_label <- ifelse(data.dep$species=="Zostera noltei","Intertidal (Zn)","Subtidal (Cn)")
+data.dep$habitat_label <- as.factor(data.dep$habitat_label)
 
 # convert some columns into factors
 data.dep$core_id <- as.factor(data.dep$core_id)
 levels(data.dep$core_id)
 data.dep$replicate <- as.factor(data.dep$replicate)
 
-# add label for figures
-data.dep$habitat_label <- ifelse(data.dep$species=="Zostera noltei","Intertidal (Zn)","Subtidal (Cn)")
-data.dep$habitat_label <- as.factor(data.dep$habitat_label)
-
 # check samples-cores-species
 table(data.dep$core_id,data.dep$species)
-
-# save data as csv
-write_csv(data.dep,"./data/raw/data_samples.csv")
-rm(data.dep)
-
-# for users without master excel file - use only this command
-data.dep <- read_csv("./data/raw/data_samples.csv")
 
 #### ------------------------------------- PREPARATION DATA VISUAL ---------------------------####
 #### PREPARE DATA VISUAL - ITEMS ####
@@ -153,6 +155,12 @@ data.vis <- data.vis[data.vis$minor <= 5000,]
 # exclude a NA row
 data.vis <- data.vis[is.na(data.vis$major)==F,]
 
+# create unique id for each item
+data.vis$visual_id <- paste0("visual_",1:nrow(data.vis))
+
+# save data as csv
+write_csv(data.vis,"./data/raw/data_particles_visual.csv")
+
 # add new core_id and species
 info <- unique(data.dep[,c("core_id_new","core_id","species")])
 data.vis <- merge(data.vis,info,by="core_id",all=T)
@@ -175,15 +183,11 @@ sam.dep[!sam.dep %in% sam.vis]
 # clean
 rm(info,sam.dep,sam.vis)
 
-# create unique id for each item
-data.vis$visual_id <- paste0("visual_",1:nrow(data.vis))
-
 # save data as csv
 write_csv(data.vis,"./data/raw/data_particles_visual.csv")
-rm(data.vis)
 
 # for users without master excel file - use only this command
-data.vis <- read_csv("./data/raw/data_particles_visual.csv")
+data.vis <- read_csv("./data/raw/data_particles_visual.csv",show_col_types=FALSE)
 
 #### PREPARE DATA VISUAL - PER SAMPLE - SHAPE ####
 
@@ -488,6 +492,9 @@ names(dataset2) <- c("ftir_id","plastic_atr","polymer_group_atr")
 data.fti <- merge(data.fti,dataset1,by="ftir_id",all.x=T)
 data.fti <- merge(data.fti,dataset2,by="ftir_id",all.x=T)
 
+# save
+write.csv(data.fti,"./data/raw/data_particles_ftir.csv")
+
 # clean and arrange
 rm(dataset1,dataset2,data.lib)
 data.fti <- arrange(data.fti,core_id,sample_id)
@@ -584,17 +591,18 @@ data.fti <- merge(data.fti,filters,all.x=T)
 data.fti[is.na(data.fti$filter_area)==T,]
 data.fti[is.na(data.fti$filter_area)==T,]$filter_area <-  0.25
 
-# save
-write.csv(data.fti,"./data/raw/data_particles_ftir.csv")
-
 # difference of number of particles in data.fti and data.vis (only sediment samples)
 nrow(data.fti[data.fti$type=="sediment",])-nrow(data.vis[data.vis$type=="sediment",])
 
 # clean
 rm(detection,i,n.items,data,DATA,filters,fil.fti,fil.vis)
 
+# save (overwrite)
+data.fti <- arrange(data.fti,ftir_id)
+write.csv(data.fti,"./data/raw/data_particles_ftir.csv")
+
 # for users without master excel file - use only this command
-data.fti <- read_csv("./data/raw/data_particles_ftir.csv")
+data.fti <- read_csv("./data/raw/data_particles_ftir.csv",show_col_types=FALSE)
 
 #### PREPARE DATA FTIR - PER SAMPLE ####
 
@@ -705,6 +713,44 @@ sed_samples <- data.dep[is.na(data.dep$percentage_organic_carbon)==F,
                           "depth_middle",        # middle sample depth (cm) compaction-corrected
                           "oc_density")]         # OC density (g cm-3) (oc_fraction*dry_bulk_density)
 
+## 20 cm 
+
+# stock estimation parameters
+min_depth <- 0      # start of stock (cm)
+max_depth <- 20     # end of stock (cm)
+
+# how to extrapolate if your data does not reach the end of stock
+# extrapolation_rule <- 1 # stops stock calculation at last recorded depth
+extrapolation_rule <- 2 # takes last recorded value and extends it to the end
+
+# OC stocks (g OC cm-2)
+stocks_oc_20 <- sed_samples %>%
+  # group by core 
+  dplyr::group_by(core_id) %>%
+  # separate the data of each core
+  tidyr::nest() %>%
+  # map
+  dplyr::mutate(
+    stock = purrr::map_dbl(
+      data,
+      function(df) {
+        MESS::auc(
+          x = df$depth_middle,
+          y = df$oc_density,
+          from = min_depth,
+          to = max_depth,
+          type = "linear",
+          rule = extrapolation_rule
+        )
+      }
+    )
+  )
+stocks_oc_20 <- stocks_oc_20[,c("core_id","stock")]
+stocks_oc_20$depth <- max_depth
+stocks_oc_20 <- merge(stocks_oc_20,data.cor)
+stocks_oc_20$type <- "oc"
+stocks_oc_20
+
 ## 50 cm 
 
 # stock estimation parameters
@@ -782,12 +828,12 @@ stocks_oc_100$type <- "oc"
 stocks_oc_100 <- arrange(stocks_oc_100,core_id_new)
 stocks_oc_100
 
-# merge 50- and 100-cm stocks (g OC cm-2)
-table.sto <- rbind(stocks_oc_50,stocks_oc_100)
+# merge 20-, 50- and 100-cm stocks (g OC cm-2)
+table.sto <- rbind(stocks_oc_20,stocks_oc_50,stocks_oc_100)
 table.sto <- arrange(table.sto,depth,core_id_new)
 
 # clean
-rm(stocks_oc_50,stocks_oc_100,min_depth,max_depth,extrapolation_rule,sed_samples)
+rm(stocks_oc_20,stocks_oc_50,stocks_oc_100,min_depth,max_depth,extrapolation_rule,sed_samples)
 
 #### CALCULATION STOCK PARTICLES - VISUAL - ALL ####
 
