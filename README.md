@@ -40,12 +40,4 @@ This project is licensed under Creative Commons Attribution 4.0 International.
 
 If you use this code or data in your work, please cite the article:    
 
-Van den Auwelant, C., Marín Beltrán, I, Cozzolino, L, de los Santos, CB. (submitted). Microplastic and organic carbon storage in sediments of intertidal and subtidal seagrass meadows.    
-
-# Contact    
-
-For questions, comments, or contributions, please contact:    
-
-Carmen B. de los Santos    
-Email: cbsantos@ualg.pt     
-GitHub: @cbdelossantos    
+Van den Auwelant, C., Marín Beltrán, I, Cozzolino, L, de los Santos, CB. (submitted). Microplastic and organic carbon storage in sediments of intertidal and subtidal seagrass meadows.       
