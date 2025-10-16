@@ -1377,23 +1377,23 @@ fig2a <- ggplot(data.dep,aes(y=percentage_organic_carbon,x=depth_middle,colour=h
 fig2a
 
 # ap abundance profile along depth per core
-fig2b <- ggplot(data.dep,aes(y=abundance_ap,x=depth_middle,colour=habitat_label,linetype=as.factor(replicate))) +
-  geom_line() +
-  geom_point(shape=21,fill="white",size=3) +
-  scale_y_continuous(bquote(SMP~abundance~(items~kg^-1~dw))) +
-  scale_x_reverse("Depth (cm)",limits=c(100,0)) +
-  facet_grid(.~habitat_label) +
-  coord_flip() +
-  scale_color_manual("Habitat",values=c("darkorange","purple")) +
-  scale_linetype_manual("Habitat",values=c(1,2,3)) +
-  theme_custom +
-  theme(strip.text.x=element_text(size=16)) +
-  guides(linetype="none",colour="none") +
-  labs(tag="B")
-fig2b
+#fig2b <- ggplot(data.dep,aes(y=abundance_ap,x=depth_middle,colour=habitat_label,linetype=as.factor(replicate))) +
+#  geom_line() +
+#  geom_point(shape=21,fill="white",size=3) +
+#  scale_y_continuous(bquote(SMP~abundance~(items~kg^-1~dw))) +
+#  scale_x_reverse("Depth (cm)",limits=c(100,0)) +
+#  facet_grid(.~habitat_label) +
+#  coord_flip() +
+#  scale_color_manual("Habitat",values=c("darkorange","purple")) +
+#  scale_linetype_manual("Habitat",values=c(1,2,3)) +
+#  theme_custom +
+#  theme(strip.text.x=element_text(size=16)) +
+#  guides(linetype="none",colour="none") +
+#  labs(tag="B")
+# fig2b
 
 # mp abundance profile along depth per core
-fig2c <- ggplot(data.dep,aes(y=abundance_mp,x=depth_middle,colour=habitat_label,linetype=as.factor(replicate))) +
+fig2b <- ggplot(data.dep,aes(y=abundance_mp,x=depth_middle,colour=habitat_label,linetype=as.factor(replicate))) +
   geom_line() +
   geom_point(shape=21,fill="white",size=3) +
   scale_y_continuous(bquote(MP~abundance~(items~kg^-1~dw))) +
@@ -1405,16 +1405,16 @@ fig2c <- ggplot(data.dep,aes(y=abundance_mp,x=depth_middle,colour=habitat_label,
   theme_custom +
   theme(strip.text.x=element_text(size=16)) +
   guides(linetype="none",colour="none") +
-  labs(tag="C")
-fig2c
+  labs(tag="B")
+fig2b
 
 # save figure
-pdf(file="./results/figures/figure_2.pdf",width=5,height=12)
-grid.arrange(fig2a,fig2b,fig2c,top="",nrow=3)
+pdf(file="./results/figures/figure_2.pdf",width=5,height=10)
+grid.arrange(fig2a,fig2b,top="",nrow=3)
 dev.off()
 
 # clean
-rm(fig2a,fig2b,fig2c,model)
+rm(fig2a,fig2b,model)
 dev.off()
 
 #### OC CONTENT INTERTIDAL VS SUBTIDAL ####
@@ -1593,22 +1593,22 @@ fig3a <- ggplot(pdata,aes(x=habitat_label,y=stock,fill=habitat_label)) +
 fig3a
 
 # plot stocks particles
-pdata <- table.sto[table.sto$depth==100 & table.sto$type=="ap",]
-fig3b <- ggplot(pdata,aes(x=habitat_label,y=stock,fill=habitat_label)) +
-  geom_boxplot() +
-  stat_summary(fun=mean,geom="point",shape=18,size=3,show.legend=FALSE) + 
-  scale_x_discrete("") +
-  scale_y_continuous(bquote(SMP~stock~100~cm~(items~cm^-2))) +
-  scale_fill_manual("Habitat",values=c("darkorange","purple")) +
-  annotate("text",x=2,y=22,label=paste0("p-value = ",round(test.st.ap$p.value,3)),size=5) +
-  theme_custom +
-  guides(fill="none") +
-  labs(tag="B")
-fig3b
+# pdata <- table.sto[table.sto$depth==100 & table.sto$type=="ap",]
+# fig3b <- ggplot(pdata,aes(x=habitat_label,y=stock,fill=habitat_label)) +
+#  geom_boxplot() +
+#  stat_summary(fun=mean,geom="point",shape=18,size=3,show.legend=FALSE) + 
+#  scale_x_discrete("") +
+#  scale_y_continuous(bquote(SMP~stock~100~cm~(items~cm^-2))) +
+#  scale_fill_manual("Habitat",values=c("darkorange","purple")) +
+#  annotate("text",x=2,y=22,label=paste0("p-value = ",round(test.st.ap$p.value,3)),size=5) +
+#  theme_custom +
+#  guides(fill="none") +
+#  labs(tag="B")
+# fig3b
 
 # plot stocks microplastics
 pdata <- table.sto[table.sto$depth==100 & table.sto$type=="mp",]
-fig3c <- ggplot(pdata,aes(x=habitat_label,y=stock,fill=habitat_label)) +
+fig3b <- ggplot(pdata,aes(x=habitat_label,y=stock,fill=habitat_label)) +
   geom_boxplot() +
   stat_summary(fun=mean,geom="point",shape=18,size=3,show.legend=FALSE) + 
   scale_x_discrete("") +
@@ -1617,16 +1617,16 @@ fig3c <- ggplot(pdata,aes(x=habitat_label,y=stock,fill=habitat_label)) +
   annotate("text",x=1,y=3,label=paste0("p-value = ",round(test.st.mp$p.value,3)),size=5) +
   theme_custom +
   guides(fill="none") +
-  labs(tag="C")
-fig3c
+  labs(tag="B")
+fig3b
 
 # save figure
-pdf(file="./results/figures/figure_3.pdf",width=5,height=12)
-grid.arrange(fig3a,fig3b,fig3c,top="",nrow=3)
+pdf(file="./results/figures/figure_3.pdf",width=5,height=10)
+grid.arrange(fig3a,fig3b,top="",nrow=3)
 dev.off()
 
 # clean
-rm(fig3a,fig3b,fig3c,pdata,test.st.oc,test.st.ap,test.st.mp,table.sto.hab,sdata)
+rm(fig3a,fig3b,pdata,test.st.oc,test.st.ap,test.st.mp,table.sto.hab,sdata)
 dev.off()
 
 #### PARTICLE CHARACTERISATION - GENERAL (FIGURE 4) ####
@@ -1941,19 +1941,19 @@ cor.test(data.dep$percentage_organic_carbon,data.dep$abundance_mp,method = c("sp
 cor.test(data.dep$percentage_organic_carbon,data.dep$abundance_mp,method = c("pearson")) # no
 
 # plot oc-smp
-fig7a <- ggplot(data.dep,aes(x=percentage_organic_carbon,y=abundance_ap,colour=habitat_label)) +
-  geom_point(shape=21,size=4) +
-  scale_x_continuous("OC content (% dw)",limits=c(0,5)) +
-  scale_y_continuous(bquote(SMP~abundance~(items~kg^-1~dw))) +
-  scale_color_manual("",values=c("darkorange","purple")) +
-  annotate("text",x=4,y=850,label="p-value = 0.063",size=5) +
-  theme(legend.position="top") +
-  theme(legend.text=element_text(size=15)) +
-  theme_custom 
-fig7a
+# fig7a <- ggplot(data.dep,aes(x=percentage_organic_carbon,y=abundance_ap,colour=habitat_label)) +
+#  geom_point(shape=21,size=4) +
+#  scale_x_continuous("OC content (% dw)",limits=c(0,5)) +
+#  scale_y_continuous(bquote(SMP~abundance~(items~kg^-1~dw))) +
+#  scale_color_manual("",values=c("darkorange","purple")) +
+#  annotate("text",x=4,y=850,label="p-value = 0.063",size=5) +
+#  theme(legend.position="top") +
+#  theme(legend.text=element_text(size=15)) +
+#  theme_custom 
+# fig7a
 
 # plot oc-mp
-fig7b <- ggplot(data.dep,aes(x=percentage_organic_carbon,y=abundance_mp,colour=habitat_label)) +
+fig7a <- ggplot(data.dep,aes(x=percentage_organic_carbon,y=abundance_mp,colour=habitat_label)) +
   geom_point(shape=21,size=4) +
   scale_x_continuous("OC content (% dw)",limits=c(0,5)) +
   scale_y_continuous(bquote(MP~abundance~(items~kg^-1~dw))) +
@@ -1962,15 +1962,15 @@ fig7b <- ggplot(data.dep,aes(x=percentage_organic_carbon,y=abundance_mp,colour=h
   theme(legend.position="top") +
   theme(legend.text=element_text(size=15)) +
   theme_custom 
-fig7b
+fig7a
 
 # save figure
-pdf(file="./results/figures/figure_7.pdf",width=5,height=10)
-grid.arrange(fig7a,fig7b,top="")
+pdf(file="./results/figures/figure_7.pdf",width=5,height=5)
+grid.arrange(fig7a,top="")
 dev.off()
 
 # clean
-rm(fig7a,fig7b)
+rm(fig7a)
 dev.off()
 
 ####--------------------------- END ---------------------------####
